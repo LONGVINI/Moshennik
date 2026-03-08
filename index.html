@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ВНИМАНИЕ: Угроза безопасности</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Unbounded:wght@400;700;900&family=Caveat:wght@700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red: #ff2222;
+      --yellow: #ffe600;
+      --green: #00ff99;
+      --pink: #ff69b4;
+      --font-mono: 'Share Tech Mono', monospace;
+      --font-display: 'Unbounded', sans-serif;
+      --font-hand: 'Caveat', cursive;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { background: #000; color: #fff; font-family: var(--font-mono); overflow-x: hidden; cursor: default; }
+
+    .page { display: none; min-height: 100vh; position: relative; }
+    .page.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+    .scanlines {
+      position: fixed; inset: 0; pointer-events: none; z-index: 9997;
+      background: repeating-linear-gradient(to bottom, transparent 0px, transparent 3px, rgba(0,0,0,0.15) 3px, rgba(0,0,0,0.15) 4px);
+    }
+    .vignette {
+      position: fixed; inset: 0; pointer-events: none; z-index: 9996;
+      background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.92) 100%);
+    }
+    .noise-overlay {
+      position: fixed; inset: 0; pointer-events: none; z-index: 9995; opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+      animation: noise-shift 0.15s steps(1) infinite;
+    }
+    @keyframes noise-shift {
+      0%  { background-position: 0 0; }
+      25% { background-position: 40px 20px; }
+      50% { background-position: -30px 50px; }
+      75% { background-position: 60px -10px; }
+    }
+
+    /* ======= PAGE 1 ======= */
+    #page1 { background: #000; padding: 20px 16px 90px; }
+
+    .p1-bg-grid {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.035;
+      background-image: linear-gradient(#ff0000 1px, transparent 1px), linear-gradient(90deg, #ff0000 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: grid-drift 8s linear infinite;
+    }
+    @keyframes grid-drift { from { background-position: 0 0; } to { background-position: 40px 40px; } }
+
+    .glitch-container { text-align: center; position: relative; z-index: 10; animation: shake 0.35s infinite; }
+
+    .skull-icon {
+      font-size: clamp(60px, 14vw, 130px); line-height: 1; display: block; margin-bottom: 12px;
+      animation: skull-pulse 0.5s infinite alternate;
+      filter: drop-shadow(0 0 40px var(--red));
+    }
+    @keyframes skull-pulse {
+      from { filter: drop-shadow(0 0 20px var(--red)) drop-shadow(0 0 60px #ff000055); transform: scale(1); }
+      to   { filter: drop-shadow(0 0 60px var(--red)) drop-shadow(0 0 100px #ff0000aa); transform: scale(1.04); }
+    }
+
+    .hack-title {
+      font-family: var(--font-display); font-weight: 900;
+      font-size: clamp(32px, 10vw, 90px); color: var(--red);
+      text-shadow: 4px 0 #ff000099, -4px 0 #00ffff44, 0 0 50px var(--red);
+      letter-spacing: -1px; line-height: 1.05;
+      animation: glitch-text 1.8s infinite; position: relative;
+    }
+    .hack-title::before, .hack-title::after {
+      content: 'ВЫ ВЗЛОМАНЫ'; position: absolute; inset: 0;
+      font-family: var(--font-display); font-weight: 900; font-size: inherit;
+      line-height: inherit; letter-spacing: inherit;
+    }
+    .hack-title::before { color: #00ffff55; clip-path: inset(0 0 60% 0); animation: gb 1.8s infinite; left: 3px; }
+    .hack-title::after  { color: #ff006655; clip-path: inset(60% 0 0 0); animation: ga 1.8s infinite; left: -3px; }
+    @keyframes glitch-text { 0%,92%,100%{transform:none} 93%{transform:skewX(-6deg)} 95%{transform:skewX(4deg)} 97%{transform:skewX(-2deg)} }
+    @keyframes gb { 0%,92%,100%{opacity:0} 93%,96%{opacity:0.8; transform:translateX(-4px)} }
+    @keyframes ga { 0%,94%,100%{opacity:0} 95%,98%{opacity:0.8; transform:translateX(4px)} }
+
+    .hack-sub {
+      font-size: clamp(10px, 2.2vw, 14px); color: #ff6666;
+      margin: 10px 0 22px; letter-spacing: 4px; text-transform: uppercase;
+    }
+
+    .ip-line {
+      font-size: 11px; color: #ff4444; letter-spacing: 2px;
+      margin-bottom: 18px; opacity: 0.85;
+    }
+
+    .progress-wrap {
+      width: min(500px, 92vw); margin: 0 auto 6px; position: relative;
+      background: #110000; border: 1px solid #ff2222; height: 32px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: repeating-linear-gradient(90deg, #ff2200 0px, #ff6600 30px, #ff2200 60px);
+      background-size: 120px 100%;
+      width: 0%;
+      animation: fill-bar 3.5s cubic-bezier(0.4,0,0.8,1) forwards, stripe-move 0.6s linear infinite;
+    }
+    .progress-label-text {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      font-size: 12px; color: #fff; letter-spacing: 2px; mix-blend-mode: difference;
+    }
+    .progress-subtext {
+      font-size: 10px; color: #ff4444; letter-spacing: 2px; margin-bottom: 22px;
+      text-align: center; width: min(500px, 92vw); min-height: 16px;
+    }
+
+    .btn-cancel {
+      background: var(--red); border: 2px solid #ff8888;
+      color: #fff; font-family: var(--font-display);
+      font-size: clamp(12px, 2.8vw, 17px); font-weight: 700;
+      padding: 16px 40px; cursor: pointer; letter-spacing: 2px; text-transform: uppercase;
+      animation: btn-danger 0.8s infinite alternate; transition: transform 0.1s;
+    }
+    .btn-cancel:hover { transform: scale(1.06); }
+    .btn-cancel:active { transform: scale(0.96); }
+    @keyframes btn-danger {
+      from { box-shadow: 0 0 30px #ff000066; }
+      to   { box-shadow: 0 0 80px #ff0000cc, 0 0 160px #ff000055; }
+    }
+
+    .countdown-row {
+      font-size: 13px; color: #ff3333; letter-spacing: 3px;
+      margin-top: 22px; animation: count-pulse 1s infinite;
+    }
+    @keyframes count-pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
+
+    .error-ticker {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--red); color: #fff;
+      font-size: 12px; letter-spacing: 2px; padding: 7px 0;
+      white-space: nowrap; overflow: hidden; z-index: 9999;
+      border-top: 2px solid #ff8888;
+    }
+    .ticker-inner { display: inline-block; animation: ticker-scroll 22s linear infinite; padding-left: 100%; }
+
+    .floating-errors { position: fixed; inset: 0; pointer-events: none; z-index: 500; overflow: hidden; }
+    .ferror {
+      position: absolute; background: #080000; border: 1px solid var(--red);
+      padding: 10px 14px; font-size: 11px; color: #ff4444;
+      white-space: nowrap; opacity: 0; box-shadow: 0 0 20px #ff000044;
+      animation: ferror-in 0.25s forwards; font-family: var(--font-mono); min-width: 180px;
+    }
+    .ferror-header {
+      background: var(--red); color: #fff; font-size: 10px;
+      padding: 3px 8px; margin: -10px -14px 8px; letter-spacing: 1px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .ferror-dot { width:8px; height:8px; border-radius:50%; background:#fff; animation:fdot 0.5s infinite alternate; flex-shrink:0; }
+    .ferror-line { margin: 3px 0; opacity: 0.75; }
+    @keyframes ferror-in { from{opacity:0;transform:scale(0.85)} to{opacity:1;transform:scale(1)} }
+    @keyframes fdot { from{opacity:1} to{opacity:0.2} }
+
+    /* ======= PAGE 2 ======= */
+    #page2 { background: #000; padding: 32px 20px 90px; }
+
+    .p2-bg {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.04;
+      background: radial-gradient(circle at 20% 50%, #ffe600, transparent 50%),
+                  radial-gradient(circle at 80% 50%, #ff6600, transparent 50%);
+    }
+
+    .rant-container { width: min(740px, 96vw); text-align: center; position: relative; z-index: 2; }
+
+    .rant-icon {
+      font-size: clamp(48px, 10vw, 80px); display: block; margin-bottom: 12px;
+      animation: mega-wiggle 0.4s infinite; filter: drop-shadow(0 0 20px var(--yellow));
+    }
+    @keyframes mega-wiggle {
+      0%  { transform: rotate(-8deg) scale(1); }
+      25% { transform: rotate(8deg) scale(1.06); }
+      50% { transform: rotate(-6deg) scale(1); }
+      75% { transform: rotate(6deg) scale(1.05); }
+      100%{ transform: rotate(-8deg) scale(1); }
+    }
+
+    .rant-title {
+      font-family: var(--font-display); font-weight: 900;
+      font-size: clamp(22px, 6.5vw, 56px); color: var(--yellow);
+      text-shadow: 0 0 30px var(--yellow), 0 0 60px #ffe60055;
+      line-height: 1.1; margin-bottom: 24px;
+    }
+
+    .rant-stat-row {
+      display: flex; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; justify-content: center;
+    }
+    .rant-stat {
+      background: #0d0d0d; border: 1px solid #2a2a2a; padding: 12px 20px; flex: 1; min-width: 130px; text-align: center;
+    }
+    .rant-stat-num {
+      font-family: var(--font-display); font-size: clamp(20px, 5vw, 30px); font-weight: 900;
+      color: var(--yellow); display: block;
+    }
+    .rant-stat-num.red-num { color: var(--red); }
+    .rant-stat-desc { font-size: 10px; color: #555; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; display: block; }
+
+    .rant-block {
+      background: #080808; border-left: 4px solid var(--yellow);
+      padding: 18px 22px; text-align: left; margin-bottom: 14px;
+      font-size: clamp(13px, 1.9vw, 15px); line-height: 1.9; color: #ccc;
+      position: relative; overflow: hidden;
+    }
+    .rant-block::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, #ffe60008, transparent 60%);
+    }
+    .rant-block.rb-red { border-left-color: var(--red); }
+    .rant-block.rb-red::before { background: linear-gradient(90deg, #ff000008, transparent 60%); }
+
+    .rb-label {
+      font-family: var(--font-display); font-size: 10px; font-weight: 700;
+      color: var(--yellow); letter-spacing: 3px; text-transform: uppercase;
+      display: block; margin-bottom: 8px;
+    }
+    .rant-block.rb-red .rb-label { color: var(--red); }
+
+    .blink-word { color: var(--red); animation: blink-fast 0.6s step-start infinite; font-weight: bold; }
+    @keyframes blink-fast { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+
+    .bounce-badges { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 20px 0; }
+    .badge {
+      background: transparent; border: 1.5px solid; padding: 7px 16px;
+      font-size: 11px; font-family: var(--font-mono); letter-spacing: 2px;
+      text-transform: uppercase; animation: badge-bounce 1.4s ease-in-out infinite;
+    }
+    .badge:nth-child(1){border-color:var(--red);color:var(--red);animation-delay:0s}
+    .badge:nth-child(2){border-color:var(--yellow);color:var(--yellow);animation-delay:0.18s}
+    .badge:nth-child(3){border-color:#00ffff;color:#00ffff;animation-delay:0.36s}
+    .badge:nth-child(4){border-color:var(--pink);color:var(--pink);animation-delay:0.54s}
+    .badge:nth-child(5){border-color:var(--green);color:var(--green);animation-delay:0.72s}
+    @keyframes badge-bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+    .btn-ok {
+      background: var(--yellow); border: none; color: #000;
+      font-family: var(--font-display); font-size: clamp(13px, 2.8vw, 18px); font-weight: 900;
+      padding: 16px 48px; cursor: pointer; letter-spacing: 2px; text-transform: uppercase;
+      box-shadow: 0 0 40px #ffe60066; margin-top: 12px;
+      transition: transform 0.1s, box-shadow 0.2s; animation: ok-glow 2s infinite alternate;
+    }
+    .btn-ok:hover { transform: scale(1.06); box-shadow: 0 0 70px #ffe600bb; }
+    .btn-ok:active { transform: scale(0.96); }
+    @keyframes ok-glow { from{box-shadow:0 0 20px #ffe60033} to{box-shadow:0 0 60px #ffe600aa} }
+
+    .floating-chars { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .fchar {
+      position: absolute; opacity: 0.07; animation: fall-char linear infinite;
+      font-family: var(--font-mono); color: var(--yellow);
+    }
+    @keyframes fall-char { from{transform:translateY(-20px)} to{transform:translateY(110vh)} }
+
+    /* ======= PAGE 3 ======= */
+    #page3 { background: #000; padding: 32px 20px 100px; }
+
+    .p3-glow-bg {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 50%, #2a0018, #000 72%);
+      animation: glow-breathe 4s ease-in-out infinite;
+    }
+    @keyframes glow-breathe { 0%,100%{opacity:0.6} 50%{opacity:1} }
+
+    .petals-container { position: fixed; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
+    .petal {
+      position: absolute; top: -50px; animation: petal-fall linear infinite; opacity: 0.9;
+    }
+    @keyframes petal-fall {
+      0%  { transform: translateY(-50px) rotate(0deg) translateX(0px); opacity: 0.9; }
+      50% { transform: translateY(55vh) rotate(360deg) translateX(28px); }
+      100%{ transform: translateY(115vh) rotate(720deg) translateX(-20px); opacity: 0; }
+    }
+
+    .congrats-wrap { width: min(700px, 96vw); text-align: center; position: relative; z-index: 2; }
+
+    .name-label {
+      font-family: var(--font-display); font-weight: 900;
+      font-size: clamp(18px, 6.5vw, 62px);
+      color: transparent;
+      background: linear-gradient(135deg, var(--pink) 0%, #ffaacc 40%, #ffe0ef 70%, var(--pink) 100%);
+      background-size: 300% 300%;
+      -webkit-background-clip: text; background-clip: text;
+      animation: name-shimmer 3s linear infinite, name-float 4s ease-in-out infinite;
+      display: block; margin-bottom: 8px; line-height: 1.2;
+      filter: drop-shadow(0 0 30px #ff69b488);
+      white-space: nowrap;
+      width: 100%;
+      text-align: center;
+      letter-spacing: -1px;
+    }
+    @keyframes name-shimmer { from{background-position:0% 50%} to{background-position:300% 50%} }
+    @keyframes name-float { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-8px) scale(1.02)} }
+
+    .flower-svg {
+      width: min(240px, 65vw); margin: 0 auto 20px; display: block;
+      animation: flower-float 4s ease-in-out infinite;
+      filter: drop-shadow(0 0 25px #ff69b466) drop-shadow(0 0 50px #ff69b422);
+    }
+    @keyframes flower-float {
+      0%,100%{ transform: translateY(0) rotate(-3deg) scale(1); }
+      50%    { transform: translateY(-16px) rotate(3deg) scale(1.04); }
+    }
+
+    .congrats-title {
+      font-family: var(--font-display); font-size: clamp(26px, 7.5vw, 66px); font-weight: 900;
+      color: var(--pink); line-height: 1.1; margin-bottom: 26px;
+      animation: title-glow-pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes title-glow-pulse {
+      0%,100%{text-shadow:0 0 30px var(--pink),0 0 60px #ff69b444}
+      50%    {text-shadow:0 0 60px var(--pink),0 0 120px #ff69b488,0 0 180px #ff69b422}
+    }
+
+    .congrats-msg {
+      font-size: clamp(13px, 2.1vw, 17px); color: #f0c0d8; line-height: 2;
+      margin-bottom: 32px; padding: 0 8px;
+    }
+    .congrats-msg strong { color: #fff; font-family: var(--font-display); font-size: 1.05em; }
+
+    .heart-divider { color: var(--pink); letter-spacing: 8px; font-size: 18px; margin: 12px 0; opacity: 0.65; }
+
+    .from-signature {
+      display: inline-block; padding: 18px 36px;
+      border: 1.5px solid #ff69b433; position: relative; margin-top: 8px;
+    }
+    .from-signature::before, .from-signature::after {
+      content: ''; position: absolute; width: 14px; height: 14px;
+      border-color: var(--pink); border-style: solid;
+    }
+    .from-signature::before { top: -2px; left: -2px; border-width: 2px 0 0 2px; }
+    .from-signature::after  { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
+
+    .from-text {
+      font-size: 11px; color: #ff69b466; letter-spacing: 3px; text-transform: uppercase;
+      display: block; margin-bottom: 4px;
+    }
+    .from-name {
+      font-family: var(--font-hand); font-size: clamp(30px, 6.5vw, 52px);
+      color: var(--pink); display: block; line-height: 1.2;
+      animation: sign-glow 2s ease-in-out infinite alternate;
+    }
+    .from-hearts {
+      display: block; font-size: 20px; margin-top: 8px; letter-spacing: 8px;
+      animation: hearts-beat 1.2s ease-in-out infinite;
+    }
+    @keyframes sign-glow { from{text-shadow:0 0 10px #ff69b455} to{text-shadow:0 0 30px #ff69b4cc,0 0 60px #ff69b455} }
+    @keyframes hearts-beat { 0%,100%{transform:scale(1)} 50%{transform:scale(1.16)} }
+
+    /* ======= SHARED KEYFRAMES ======= */
+    @keyframes shake {
+      0%,100%{transform:translate(0,0) rotate(0)}
+      15%{transform:translate(-2px,1px) rotate(-0.4deg)}
+      30%{transform:translate(2px,-1px) rotate(0.4deg)}
+      45%{transform:translate(-1px,2px) rotate(-0.2deg)}
+      60%{transform:translate(2px,-2px) rotate(0.3deg)}
+      75%{transform:translate(-1px,1px) rotate(-0.3deg)}
+    }
+    @keyframes fill-bar {
+      0%{width:0%} 20%{width:12%} 45%{width:38%} 65%{width:62%} 80%{width:79%} 92%{width:91%} 100%{width:100%}
+    }
+    @keyframes stripe-move { from{background-position:0 0} to{background-position:120px 0} }
+    @keyframes ticker-scroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+  </style>
+</head>
+<body>
+
+<div class="scanlines"></div>
+<div class="vignette"></div>
+<div class="noise-overlay"></div>
+
+<!-- ====== PAGE 1 ====== -->
+<div id="page1" class="page active">
+  <div class="p1-bg-grid"></div>
+  <div class="floating-errors" id="errorsContainer"></div>
+
+  <div class="glitch-container">
+    <span class="skull-icon">&#x2620;&#xFE0F;</span>
+    <div class="hack-title">ВЫ ВЗЛОМАНЫ</div>
+    <div class="hack-sub">Критическая угроза &nbsp;|&nbsp; Системная тревога</div>
+    <div class="ip-line">Ваш IP: <span id="fakeIp">185.220.101.47</span> &nbsp;&bull;&nbsp; Местоположение: <span id="fakeCity">определяется...</span></div>
+
+    <div class="progress-wrap">
+      <div class="progress-fill" id="progressFill"></div>
+      <div class="progress-label-text" id="progressLabel">ИНИЦИАЛИЗАЦИЯ...</div>
+    </div>
+    <div class="progress-subtext" id="progressText">Кража данных: подготовка...</div>
+
+    <button class="btn-cancel" onclick="goToPage2()">НАЖМИТЕ ДЛЯ ОТМЕНЫ ОПЕРАЦИИ</button>
+
+    <div class="countdown-row" id="countdown">Уничтожение файлов через: 00:04:59</div>
+  </div>
+
+  <div class="error-ticker">
+    <span class="ticker-inner">
+      ВНИМАНИЕ &nbsp;&bull;&nbsp; ОБНАРУЖЕН ВИРУС &nbsp;&bull;&nbsp; КРАЖА ДАННЫХ &nbsp;&bull;&nbsp; ПАРОЛИ СКОМПРОМЕТИРОВАНЫ &nbsp;&bull;&nbsp; НЕМЕДЛЕННО ПРИМИТЕ МЕРЫ &nbsp;&bull;&nbsp; ERROR 0x000000D1 &nbsp;&bull;&nbsp; КРИТИЧЕСКАЯ ОШИБКА &nbsp;&bull;&nbsp; SYSTEM FAILURE &nbsp;&bull;&nbsp; ВАШ IP РАСКРЫТ &nbsp;&bull;&nbsp; ШИФРОВАНИЕ ЗАПУЩЕНО &nbsp;&bull;&nbsp; ДАННЫЕ ПЕРЕДАЮТСЯ &nbsp;&bull;&nbsp; ВНИМАНИЕ &nbsp;&bull;&nbsp; ОБНАРУЖЕН ВИРУС &nbsp;&bull;&nbsp; КРАЖА ДАННЫХ &nbsp;&bull;&nbsp; ПАРОЛИ СКОМПРОМЕТИРОВАНЫ &nbsp;&bull;&nbsp; НЕМЕДЛЕННО ПРИМИТЕ МЕРЫ &nbsp;&bull;&nbsp; ERROR 0x000000D1 &nbsp;&bull;&nbsp; КРИТИЧЕСКАЯ ОШИБКА &nbsp;&bull;&nbsp; SYSTEM FAILURE &nbsp;&bull;&nbsp; ВАШ IP РАСКРЫТ &nbsp;&bull;&nbsp; ШИФРОВАНИЕ ЗАПУЩЕНО &nbsp;&bull;&nbsp; ДАННЫЕ ПЕРЕДАЮТСЯ &nbsp;&bull;&nbsp;
+    </span>
+  </div>
+</div>
+
+<!-- ====== PAGE 2 ====== -->
+<div id="page2" class="page">
+  <div class="p2-bg"></div>
+  <div class="floating-chars" id="charsContainer"></div>
+
+  <div class="rant-container">
+    <span class="rant-icon">&#x1F926;</span>
+    <div class="rant-title">Я ЖЕ ГОВОРИЛ<br/>НЕ ПЕРЕХОДИТЬ<br/>ПО ССЫЛКАМ!!!</div>
+
+    <div class="rant-stat-row">
+      <div class="rant-stat">
+        <span class="rant-stat-num red-num">147</span>
+        <span class="rant-stat-desc">паролей слито</span>
+      </div>
+      <div class="rant-stat">
+        <span class="rant-stat-num">1.8 ГБ</span>
+        <span class="rant-stat-desc">фото украдено</span>
+      </div>
+      <div class="rant-stat">
+        <span class="rant-stat-num red-num">$0.00</span>
+        <span class="rant-stat-desc">денег осталось</span>
+      </div>
+    </div>
+
+    <div class="rant-block rb-red">
+      <span class="rb-label">Угроза #1 — Серьёзно??</span>
+      Ты получаешь <span class="blink-word">ПОДОЗРИТЕЛЬНУЮ ССЫЛКУ</span> и просто берёшь и переходишь?? А что если меня взломали? А что если это был хакер из Северной Кореи с двумя мониторами и чашкой чёрного кофе?!
+    </div>
+
+    <div class="rant-block">
+      <span class="rb-label">Угроза #2 — Думала хоть секунду?</span>
+      А если бы прямо сейчас твой телефон шифровался? А если бы злоумышленник уже скачал все фото из облака? Ты бы вот так вот просто — <span class="blink-word">клик</span> — и всё?
+    </div>
+
+    <div class="rant-block rb-red">
+      <span class="rb-label">Угроза #3 — Статистика</span>
+      Знаешь сколько людей попадаются на такое? <span class="blink-word">МИЛ-ЛИ-О-НЫ.</span> Тебе повезло что это был я, а не какой-то студент с Kali Linux и слишком большим количеством свободного времени.
+    </div>
+
+    <div class="bounce-badges">
+      <div class="badge">Пароли слиты</div>
+      <div class="badge">Деньги украдены</div>
+      <div class="badge">Фото в сети</div>
+      <div class="badge">Доверие подорвано</div>
+      <div class="badge">Нет, это шутка</div>
+    </div>
+
+    <button class="btn-ok" onclick="goToPage3()">ОК, МНЕ ВСЁ ПОНЯТНО...</button>
+  </div>
+</div>
+
+<!-- ====== PAGE 3 ====== -->
+<div id="page3" class="page">
+  <div class="p3-glow-bg"></div>
+  <div class="petals-container" id="petalsContainer"></div>
+
+  <div class="congrats-wrap">
+    <span class="name-label">РУЗАННОЧКА</span>
+
+    <svg class="flower-svg" viewBox="0 0 260 290" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="pg1" cx="50%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffb3d9"/><stop offset="100%" stop-color="#ff4499"/></radialGradient>
+        <radialGradient id="pg2" cx="50%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffccdd"/><stop offset="100%" stop-color="#ff69b4"/></radialGradient>
+        <radialGradient id="cg" cx="40%" cy="35%" r="65%"><stop offset="0%" stop-color="#fff176"/><stop offset="100%" stop-color="#ff8f00"/></radialGradient>
+        <linearGradient id="sg" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#2e7d32"/><stop offset="100%" stop-color="#66bb6a"/></linearGradient>
+      </defs>
+      <path d="M130 270 Q120 230 128 190" stroke="url(#sg)" stroke-width="5" stroke-linecap="round" fill="none"/>
+      <path d="M128 230 Q104 215 96 192 Q115 198 128 218 Z" fill="#4caf50" opacity="0.9"/>
+      <ellipse cx="130" cy="78" rx="18" ry="40" fill="url(#pg1)" opacity="0.88"/>
+      <ellipse cx="130" cy="78" rx="18" ry="40" fill="url(#pg2)" opacity="0.83" transform="rotate(45 130 112)"/>
+      <ellipse cx="130" cy="78" rx="18" ry="40" fill="url(#pg1)" opacity="0.88" transform="rotate(90 130 112)"/>
+      <ellipse cx="130" cy="78" rx="18" ry="40" fill="url(#pg2)" opacity="0.83" transform="rotate(135 130 112)"/>
+      <ellipse cx="130" cy="78" rx="18" ry="40" fill="url(#pg1)" opacity="0.88" transform="rotate(180 130 112)"/>
+      <ellipse cx="130" cy="78" rx="18" ry="40" fill="url(#pg2)" opacity="0.83" transform="rotate(225 130 112)"/>
+      <ellipse cx="130" cy="78" rx="18" ry="40" fill="url(#pg1)" opacity="0.88" transform="rotate(270 130 112)"/>
+      <ellipse cx="130" cy="78" rx="18" ry="40" fill="url(#pg2)" opacity="0.83" transform="rotate(315 130 112)"/>
+      <circle cx="130" cy="112" r="26" fill="url(#cg)" stroke="#ffcc02" stroke-width="2.5"/>
+      <circle cx="130" cy="112" r="14" fill="#ff8f00" opacity="0.7"/>
+      <circle cx="124" cy="107" r="4" fill="#fff" opacity="0.35"/>
+    </svg>
+
+    <div class="congrats-title">С 8 МАРТА!</div>
+
+    <div class="congrats-msg">
+      Ладно, признаю&nbsp;&mdash; ни тебя не взломали, ни данные не украли.<br/>
+      Это была проверка. Ты провалила её с&nbsp;блеском!!!!!!!!!<br/><br/>
+      Но если серьёзно....&nbsp;&mdash; <strong>&nbsp; с праздником, роднуля!</strong><br/>
+      Да-да, это я такая падлюка, кто ж ещё!<br/>
+      Пускай в этот день ты будешь сиять ярче солнца!!!!<br/>
+      И никогда больше не переходить по подозрительным ссылкам...<br/><br/>
+      Даже если они меня... <strong>Особенно...</strong> если они от <strong>меня</strong>... 😈
+    </div>
+
+    <div class="heart-divider">&#x2764; &nbsp; &#x2764; &nbsp; &#x2764;</div>
+
+    <div class="from-signature">
+      <span class="from-text">с любовью и заботой</span>
+      <span class="from-name">от Ромашечки</span>
+      <span class="from-hearts">&#x2665;&#xFE0F;&nbsp;&#x2665;&#xFE0F;&nbsp;&#x2665;&#xFE0F;</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function goToPage2() { showPage('page2'); spawnChars(); }
+  function goToPage3() { showPage('page3'); spawnPetals(); }
+
+  // fake city reveal
+  var fakeCities = ['Одесса', 'Киев', 'Харьков', 'Москва', 'Варшава'];
+  setTimeout(function() {
+    var el = document.getElementById('fakeCity');
+    if (el) el.textContent = fakeCities[Math.floor(Math.random() * fakeCities.length)];
+  }, 1400);
+
+  // progress bar label sync
+  var stages = [
+    [0, 'ИНИЦИАЛИЗАЦИЯ...'],
+    [12, 'ПОДКЛЮЧЕНИЕ К СЕРВЕРУ...'],
+    [28, 'ОБХОД АНТИВИРУСА...'],
+    [45, 'КРАЖА ПАРОЛЕЙ...'],
+    [62, 'ЗАГРУЗКА ФОТО...'],
+    [80, 'ОТПРАВКА ДАННЫХ...'],
+    [93, 'ПОЧТИ ГОТОВО...'],
+    [100, 'ОПЕРАЦИЯ ЗАВЕРШЕНА'],
+  ];
+  var progressSubtexts = [
+    'Кража данных: подготовка...',
+    'Обнаружено 3 аккаунта социальных сетей',
+    'Перехват сетевого трафика...',
+    'Найдено 147 сохранённых паролей',
+    'Загрузка 1.8 ГБ личных фотографий',
+    'Отправка на удалённый сервер 185.220.x.x...',
+    'Шифрование файловой системы...',
+    'Операция завершена успешно',
+  ];
+  var stageIdx = 0;
+
+  setInterval(function() {
+    var fill = document.getElementById('progressFill');
+    var label = document.getElementById('progressLabel');
+    var text = document.getElementById('progressText');
+    if (!fill) return;
+    var styleW = fill.getBoundingClientRect().width;
+    var parentW = fill.parentElement ? fill.parentElement.getBoundingClientRect().width : 1;
+    var pct = parentW > 0 ? (styleW / parentW) * 100 : 0;
+    while (stageIdx < stages.length && pct >= stages[stageIdx][0]) {
+      label.textContent = stages[stageIdx][1];
+      text.textContent = progressSubtexts[stageIdx] || '';
+      stageIdx++;
+    }
+  }, 300);
+
+  // countdown
+  var countSecs = 299;
+  setInterval(function() {
+    if (!document.getElementById('page1').classList.contains('active')) return;
+    if (countSecs > 0) countSecs--;
+    var m = Math.floor(countSecs / 60);
+    var s = countSecs % 60;
+    var el = document.getElementById('countdown');
+    if (el) el.textContent = 'Уничтожение файлов через: 00:0' + m + ':' + (s < 10 ? '0' : '') + s;
+  }, 1000);
+
+  // floating error popups
+  var errorMessages = [
+    ['ERROR 0x8007000E', ['Недостаточно памяти', 'для защиты системы']],
+    ['VIRUS DETECTED',  ['Trojan.CryptoLocker', 'обнаружен в system32']],
+    ['NETWORK BREACH',  ['Входящее соединение', 'от 185.220.101.47']],
+    ['DATA LEAK',       ['23 файла отправлены', 'на внешний сервер']],
+    ['PASSWORD FAIL',   ['Перехвачено 5', 'сохранённых паролей']],
+    ['FIREWALL DOWN',   ['Брандмауэр отключён', 'внешним процессом']],
+    ['RANSOM ALERT',    ['Файлы будут зашифрованы', 'через 00:04:59']],
+    ['WEBCAM ACCESS',   ['Несанкционированный', 'доступ к камере']],
+    ['KEYLOGGER',       ['Нажатия клавиш', 'записываются...']],
+    ['BANK ACCESS',     ['Попытка входа', 'в онлайн-банк']],
+  ];
+
+  function spawnError() {
+    if (!document.getElementById('page1').classList.contains('active')) return;
+    var container = document.getElementById('errorsContainer');
+    var msg = errorMessages[Math.floor(Math.random() * errorMessages.length)];
+    var el = document.createElement('div');
+    el.className = 'ferror';
+    el.style.left = (4 + Math.random() * 70) + 'vw';
+    el.style.top  = (4 + Math.random() * 68) + 'vh';
+    el.innerHTML = '<div class="ferror-header"><div class="ferror-dot"></div>' + msg[0] + '</div>'
+      + '<div class="ferror-line">' + msg[1][0] + '</div>'
+      + '<div class="ferror-line">' + msg[1][1] + '</div>';
+    container.appendChild(el);
+    setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 2400 + Math.random() * 1400);
+  }
+
+  setInterval(spawnError, 800);
+
+  // falling chars on page 2
+  function spawnChars() {
+    var container = document.getElementById('charsContainer');
+    var chars = '01HACKERERROR!?#$ВЗЛОММАЛВАРЬ>';
+    for (var i = 0; i < 45; i++) {
+      (function(i) {
+        setTimeout(function() {
+          var el = document.createElement('div');
+          el.className = 'fchar';
+          el.style.left = (Math.random() * 100) + 'vw';
+          el.style.animationDuration = (7 + Math.random() * 10) + 's';
+          el.style.animationDelay = '-' + (Math.random() * 9) + 's';
+          el.style.fontSize = (11 + Math.random() * 13) + 'px';
+          el.textContent = chars[Math.floor(Math.random() * chars.length)];
+          container.appendChild(el);
+        }, i * 50);
+      })(i);
+    }
+  }
+
+  // petals on page 3
+  var petalSet = ['\uD83C\uDF38','\uD83C\uDF37','\uD83C\uDF39','\uD83C\uDF3A','\u2728','\uD83D\uDCAB','\uD83D\uDC97','\uD83C\uDF3F'];
+
+  function spawnPetals() {
+    var container = document.getElementById('petalsContainer');
+    for (var i = 0; i < 40; i++) {
+      (function(i) {
+        setTimeout(function() {
+          var el = document.createElement('div');
+          el.className = 'petal';
+          el.textContent = petalSet[Math.floor(Math.random() * petalSet.length)];
+          el.style.left = (Math.random() * 100) + 'vw';
+          el.style.animationDuration = (6 + Math.random() * 9) + 's';
+          el.style.animationDelay = '-' + (Math.random() * 7) + 's';
+          el.style.fontSize = (16 + Math.random() * 20) + 'px';
+          container.appendChild(el);
+        }, i * 70);
+      })(i);
+    }
+  }
+</script>
+</body>
+</html>
